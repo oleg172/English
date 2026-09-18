@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-english
+    environment:
+      POSTGRES_DB: words
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "45432:5432"
+    user: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+  liquibase:
+    image: liquibase
+    container_name: liquibase-english
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../liquibase/db/changelog/:/liquibase/changelog
+    command: liquibase --url="jdbc:postgresql://postgres-english:5432/words" --username=postgres --password=postgres --classpath=/liquibase/changelog --changeLogFile=/db.changelog-master.yaml --log-level=info update
+  libretranslate:
+    image: libretranslate/libretranslate
+    container_name: libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_LOAD_ONLY=en,ru # опционально: ограничить загрузку моделей для указанных языков (через запятую)
+      - LT_THREADS=4                       # опционально: количество потоков (по умолчанию 4)
+      # Другие переменные окружения, если нужны
+    restart: unless-stopped

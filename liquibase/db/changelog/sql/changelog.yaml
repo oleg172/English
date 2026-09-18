@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - include:
+      file: 01-add-telegram-user-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 02-add-word-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 03-add-translation-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 04-add-word-example-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 05-add-user-words-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 06-add-user-word-translations-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 07-add-topic-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 08-add-user-word-topic-table.sql
+      relativeToChangelogFile: true
