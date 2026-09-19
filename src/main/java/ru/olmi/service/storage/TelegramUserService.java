@@ -40,8 +40,6 @@ public class TelegramUserService {
                 .setLanguageCode(data.languageCode())
                 .setPreferredToLanguage(configuration.getTranslation().getDefaultToLang())
                 .setPreferredFromLanguage(configuration.getTranslation().getDefaultFromLang())
-                .setPreferUserTranslation(configuration.getTranslation().isDefaultPreferUserTranslation())
-                .setPreferUserTopics(configuration.getTranslation().isDefaultPreferUserTopics())
         );
     }
 }

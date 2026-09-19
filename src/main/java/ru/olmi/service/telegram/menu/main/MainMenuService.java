@@ -12,7 +12,9 @@ public class MainMenuService {
                 List.of(
                         new MainMenu.Item("🔎 Найти перевод", MainMenu.Action.TRANSLATE),
                         new MainMenu.Item("✏️ Редактировать слово", MainMenu.Action.EDIT_WORD),
-                        new MainMenu.Item("📚 Мои слова", MainMenu.Action.MY_WORDS)
+                        new MainMenu.Item("📚 Мои слова", MainMenu.Action.MY_WORDS),
+                        new MainMenu.Item("📥 Загрузить слова", MainMenu.Action.UPLOAD),
+                        new MainMenu.Item("❓ Помощь", MainMenu.Action.HELP)
                 )
         );
     }

@@ -7,7 +7,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.domain.Word;
+import ru.olmi.dto.TranslationResult;
 import ru.olmi.repository.WordRepository;
+import ru.olmi.service.impl.TranslationFinder;
 import ru.olmi.service.storage.UserWordStorage;
 import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
 import ru.olmi.service.telegram.menu.main.MainMenuView;
@@ -23,12 +25,14 @@ public class TranslationCallbackHandler implements TelegramCallbackHandlerDelega
     private final TranslationDialogState state;
     private final MainMenuView mainMenuView;
     private final TranslationView translationView;
+    private final TranslationFinder translationFinder;
 
     @Override
     public boolean supports(CallbackQuery callbackQuery) {
         String data = callbackQuery.getData();
 
         return TranslationCallback.isAddToDictionary(data)
+                || TranslationCallback.isSelect(data)
                 || TranslationCallback.MAIN_MENU.equals(data);
     }
 
@@ -38,6 +42,10 @@ public class TranslationCallbackHandler implements TelegramCallbackHandlerDelega
 
         if (TranslationCallback.isAddToDictionary(data)) {
             handleAddToDictionary(callbackQuery, user, TranslationCallback.getWordId(data), sender);
+            return;
+        }
+        if (TranslationCallback.isSelect(data)) {
+            handleSelect(callbackQuery, user, TranslationCallback.getSelectedWordId(data), sender);
             return;
         }
 
@@ -61,6 +69,27 @@ public class TranslationCallbackHandler implements TelegramCallbackHandlerDelega
         state.finish(user);
 
         sender.accept(mainMenuView.show(callbackQuery.getMessage().getChatId(), "✅ Слово добавлено в словарь.\n\n"));
+    }
+
+    private void handleSelect(CallbackQuery callbackQuery, TelegramUser user, Long wordId, Consumer<SendMessage> sender) {
+        Word word = wordRepository.findById(wordId).orElse(null);
+
+        if (word == null) {
+            state.finish(user);
+            sender.accept(translationView.unavailable(callbackQuery.getMessage().getChatId()));
+            return;
+        }
+
+        TranslationResult result = translationFinder.searchByWord(user, word.getWord());
+
+        if (result == null) {
+            state.finish(user);
+            sender.accept(translationView.unavailable(callbackQuery.getMessage().getChatId()));
+            return;
+        }
+
+        state.finish(user);
+        sender.accept(translationView.result(callbackQuery.getMessage().getChatId(), result));
     }
 
     /**

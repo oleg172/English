@@ -71,7 +71,7 @@ public class UserWordStorage {
     }
 
     @Transactional
-    public void addTranslation(TelegramUser user, Long userWordId, String translation) {
+    public boolean addTranslation(TelegramUser user, Long userWordId, String translation) {
         UserWord userWord = userWordRepository.findByIdAndUserId(userWordId, user.getId())
                                               .orElseThrow(() -> new IllegalArgumentException("User word not found: " + userWordId));
 
@@ -80,10 +80,11 @@ public class UserWordStorage {
                                         .anyMatch(value -> value.getTranslation().equalsIgnoreCase(translation));
 
         if (alreadyExists) {
-            return;
+            return false;
         }
 
         userWord.getTranslations().add(new UserWordTranslation().setUserWord(userWord).setTranslation(translation));
+        return true;
     }
 
     @Transactional(readOnly = true)

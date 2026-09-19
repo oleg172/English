@@ -24,7 +24,7 @@ public class TopicStorage {
     private final UserWordTopicRepository userWordTopicRepository;
     private final UserWordRepository userWordRepository;
 
-    public void addTopic(TelegramUser user, Long userWordId, String topicName) {
+    public boolean addTopic(TelegramUser user, Long userWordId, String topicName) {
         UserWord userWord = userWordRepository
                 .findByIdAndUserId(userWordId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User word not found: " + userWordId));
@@ -40,12 +40,13 @@ public class TopicStorage {
                                         .anyMatch(value -> value.getTopic().getId().equals(topic.getId()));
 
         if (alreadyExists) {
-            return;
+            return false;
         }
 
         userWord.getTopics().add(new UserWordTopic()
                 .setUserWord(userWord)
                 .setTopic(topic));
+        return true;
     }
 
     @Transactional(readOnly = true)

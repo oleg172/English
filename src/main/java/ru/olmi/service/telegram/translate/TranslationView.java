@@ -1,5 +1,6 @@
 package ru.olmi.service.telegram.translate;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -29,5 +30,10 @@ public class TranslationView {
 
     public SendMessage notFound(Long chatId) {
         return telegramMessage.text(chatId, "Не удалось найти перевод.");
+    }
+
+    public SendMessage results(Long chatId, List<TranslationResult> results) {
+        return telegramMessage.withKeyboard(chatId, "Найдено несколько слов. Выберите нужное:", translationKeyboard.results(results)
+        );
     }
 }

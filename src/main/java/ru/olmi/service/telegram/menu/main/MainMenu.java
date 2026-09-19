@@ -16,6 +16,8 @@ public record MainMenu(
     public enum Action {
         TRANSLATE,
         EDIT_WORD,
-        MY_WORDS
+        MY_WORDS,
+        UPLOAD,
+        HELP
     }
 }

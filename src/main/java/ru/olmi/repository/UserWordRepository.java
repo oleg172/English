@@ -1,5 +1,6 @@
 package ru.olmi.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,6 +75,23 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long> {
     Optional<UserWord> findByIdAndUserId(
             Long id,
             Long userId
+    );
+
+    @Query("""
+        select distinct uw
+        from UserWord uw
+        join fetch uw.word w
+        join uw.translations t
+        where uw.user.id = :userId
+          and w.fromLanguage = :fromLanguage
+          and w.toLanguage = :toLanguage
+          and lower(t.translation) = lower(:translation)
+        """)
+    List<UserWord> findByUserTranslation(
+            @Param("userId") Long userId,
+            @Param("translation") String translation,
+            @Param("fromLanguage") String fromLanguage,
+            @Param("toLanguage") String toLanguage
     );
 
 }

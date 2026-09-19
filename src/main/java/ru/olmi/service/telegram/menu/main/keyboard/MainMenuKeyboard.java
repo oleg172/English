@@ -35,6 +35,8 @@ public class MainMenuKeyboard {
             case TRANSLATE -> MainMenuCallback.TRANSLATE;
             case EDIT_WORD -> MainMenuCallback.EDIT_WORD;
             case MY_WORDS -> MainMenuCallback.MY_WORDS;
+            case UPLOAD -> MainMenuCallback.IMPORT;
+            case HELP -> MainMenuCallback.HELP;
         };
     }
 }

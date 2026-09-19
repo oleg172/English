@@ -45,12 +45,6 @@ public class TelegramUser extends BaseEntity {
     @Column(name = "preferred_to_language", nullable = false, length = 10)
     private String preferredToLanguage;
 
-    @Column(name = "prefer_user_translation", nullable = false)
-    private boolean preferUserTranslation;
-
-    @Column(name = "prefer_user_topics", nullable = false)
-    private boolean preferUserTopics;
-
     @Column(name = "last_activity")
     private LocalDateTime lastActivity;
 

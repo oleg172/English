@@ -1,5 +1,6 @@
 package ru.olmi.service.integration;
 
+import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -11,6 +12,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.olmi.config.AppConfiguration;
 import ru.olmi.integration.google.GoogleTranslationResponse;
 
@@ -27,15 +29,22 @@ public class GoogleTranslateIntegration implements TranslateIntegration {
     public GoogleTranslationResponse translate(String word, String language, String targetLanguage) {
         log.info("Try to find translation via Google translate service for word [{}], language [{}], targetLanguage [{}]", word, language, targetLanguage);
 
+        String path = configuration.getIntegrations().getGoogleTranslate().getHost()
+                + configuration.getIntegrations().getGoogleTranslate().getPaths().get("TRANSLATE");
+        URI uri = UriComponentsBuilder.fromUriString(path)
+                                      .buildAndExpand(
+                                              language.toLowerCase().substring(0, 2),
+                                              targetLanguage.toLowerCase().substring(0, 2),
+                                              word
+                                      )
+                                      .encode()
+                                      .toUri();
         HttpEntity<Void> requestEntity = new HttpEntity<>(null, new HttpHeaders());
         ResponseEntity<GoogleTranslationResponse> response = googleRestTemplate.exchange(
-                configuration.getIntegrations().getGoogleTranslate().getPaths().get("TRANSLATE"),
+                uri,
                 HttpMethod.POST,
                 requestEntity,
-                GoogleTranslationResponse.class,
-                language.toLowerCase().substring(0, 2),
-                targetLanguage.toLowerCase().substring(0, 2),
-                word
+                GoogleTranslationResponse.class
         );
 
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {

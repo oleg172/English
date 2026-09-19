@@ -6,6 +6,7 @@ public final class TranslationCallback {
      * добавление слова в словарь пользователя
      */
     public static final String ADD_TO_DICTIONARY = "translation:add";
+    public static final String SELECT = "translation:select";
 
     /**
      * Возвращение назад в главное меню
@@ -25,5 +26,17 @@ public final class TranslationCallback {
 
     public static Long getWordId(String callbackData) {
         return Long.valueOf(callbackData.substring((ADD_TO_DICTIONARY + ":").length()));
+    }
+
+    public static String select(Long wordId) {
+        return SELECT + ":" + wordId;
+    }
+
+    public static boolean isSelect(String callbackData) {
+        return callbackData.startsWith(SELECT + ":");
+    }
+
+    public static Long getSelectedWordId(String callbackData) {
+        return Long.valueOf(callbackData.substring((SELECT + ":").length()));
     }
 }
