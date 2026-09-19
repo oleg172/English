@@ -24,7 +24,7 @@ public class UserDictionaryTopicWordSearchView {
     }
 
     public SendMessage empty(Long chatId, String query) {
-        return telegramMessage.text(chatId, "По запросу «" + query + "» слова не найдены.");
+        return telegramMessage.withKeyboard(chatId, "По запросу «" + query + "» слова не найдены.", keyboard.empty());
     }
 
     public SendMessage topicUnavailable(Long chatId) {

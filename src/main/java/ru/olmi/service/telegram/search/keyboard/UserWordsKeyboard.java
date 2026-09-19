@@ -40,6 +40,13 @@ public class UserWordsKeyboard {
                                    .build();
     }
 
+    public InlineKeyboardMarkup empty() {
+        return InlineKeyboardMarkup.builder()
+                                   .keyboard(List.of(
+                                           List.of(button("↩️ Главное меню", EditWordCallback.MENU))))
+                                   .build();
+    }
+
     private InlineKeyboardButton button(String text, String callbackData) {
         return InlineKeyboardButton.builder()
                                    .text(text)

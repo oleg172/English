@@ -129,12 +129,21 @@ public class EditWordCallbackHandler implements TelegramCallbackHandlerDelegate 
     private void handleDelete(CallbackQuery callbackQuery, TelegramUser user, Consumer<SendMessage> sender) {
         String data = callbackQuery.getData();
         Long userWordId = EditWordCallback.getDeleteUserWordId(data);
+        EditWordSource source = EditWordCallback.getDeleteSource(data);
         Long chatId = callbackQuery.getMessage().getChatId();
+
+        boolean singleSearchResult = source == EditWordSource.SEARCH && userWordSearch.hasSingleResult(user);
 
         boolean deleted = userWordStorage.delete(user, userWordId);
 
         if (!deleted) {
             sender.accept(wordCardView.unavailable(chatId));
+            return;
+        }
+
+        if (singleSearchResult) {
+            userWordSearch.finish(user);
+            sender.accept(mainMenuView.show(chatId));
             return;
         }
 

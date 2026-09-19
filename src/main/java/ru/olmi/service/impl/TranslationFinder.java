@@ -2,7 +2,6 @@ package ru.olmi.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -108,9 +107,12 @@ public class TranslationFinder {
                 .setUsageExamples(word.getExamples().stream().map(WordExample::getExample).collect(Collectors.toList()));
 
         userWordRepository.findByUserIdAndWordId(user.getId(), word.getId())
-                          .ifPresent(userWord -> result.setUserTranslations(userWord.getTranslations().stream().map(UserWordTranslation::getTranslation)
+                          .ifPresent(userWord ->
+                                  result.setUserTranslations(userWord.getTranslations().stream().map(UserWordTranslation::getTranslation)
                                                                                     .collect(Collectors.toList()))
-                                                       .setTopics(userWord.getTopics().stream().map(t -> t.getTopic().getName()).collect(Collectors.toList())));
+                                        .setTopics(userWord.getTopics().stream().map(t -> t.getTopic().getName()).collect(Collectors.toList()))
+                                        .setUserWordId(userWord.getId())
+                          );
 
         return result;
     }

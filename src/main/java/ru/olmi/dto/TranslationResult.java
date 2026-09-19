@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TranslationResult {
     private Long wordId;
+    private Long userWordId;
     private String word;
     private String transcription;
     private List<String> commonTranslations;

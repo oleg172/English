@@ -25,7 +25,7 @@ public class TranslationView {
     }
 
     public SendMessage result(Long chatId, TranslationResult result) {
-        return telegramMessage.withKeyboard(chatId, translationMessageFormatter.format(result), translationKeyboard.result(result.getWordId()));
+        return telegramMessage.withKeyboard(chatId, translationMessageFormatter.format(result), translationKeyboard.result(result));
     }
 
     public SendMessage notFound(Long chatId) {

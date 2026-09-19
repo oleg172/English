@@ -54,6 +54,14 @@ public class UserDictionaryTopicSearchKeyboard {
         return navigation;
     }
 
+    public InlineKeyboardMarkup empty() {
+        return InlineKeyboardMarkup.builder()
+                                   .keyboard(List.of(
+                                           List.of(button("↩️ Назад", UserDictionaryTopicCallback.topics()))
+                                   ))
+                                   .build();
+    }
+
     private InlineKeyboardButton button(String text, String callbackData) {
         return InlineKeyboardButton.builder()
                                    .text(text)

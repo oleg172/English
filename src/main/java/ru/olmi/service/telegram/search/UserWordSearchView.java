@@ -21,7 +21,7 @@ public class UserWordSearchView {
     }
 
     public SendMessage empty(Long chatId) {
-        return telegramMessage.text(chatId, "По вашему запросу ничего не найдено.");
+        return telegramMessage.withKeyboard(chatId, "По вашему запросу ничего не найдено.", userWordsKeyboard.empty());
     }
 
     public SendMessage enterQuery(Long chatId) {

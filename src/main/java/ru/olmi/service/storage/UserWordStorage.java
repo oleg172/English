@@ -45,6 +45,8 @@ public class UserWordStorage {
         }
 
         return Optional.of(new TranslationResult()
+                .setWordId(userWord.getWord().getId())
+                .setUserWordId(userWord.getId())
                 .setWord(userWord.getWord().getWord())
                 .setTranscription(userWord.getWord().getTranscription())
                 .setUserTranslations(userWord.getTranslations()

@@ -83,6 +83,18 @@ public class UserWordSearch {
         return view.page(chatId, context.query(), result);
     }
 
+    public boolean hasSingleResult(TelegramUser user) {
+        WordSearchDialogState.SearchContext context = searchState.getContext(user);
+
+        if (context == null) {
+            return false;
+        }
+
+        Page<UserWord> result = userWordStorage.search(user, context.query(), context.page());
+
+        return result.getTotalElements() == 1;
+    }
+
     public void finish(TelegramUser user) {
         searchState.finish(user);
     }

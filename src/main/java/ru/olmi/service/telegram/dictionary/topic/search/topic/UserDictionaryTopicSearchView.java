@@ -24,6 +24,6 @@ public class UserDictionaryTopicSearchView {
     }
 
     public SendMessage empty(Long chatId, String query) {
-        return telegramMessage.text(chatId, "По запросу «" + query + "» топики не найдены.");
+        return telegramMessage.withKeyboard(chatId, "По запросу «" + query + "» топики не найдены.", keyboard.empty());
     }
 }
