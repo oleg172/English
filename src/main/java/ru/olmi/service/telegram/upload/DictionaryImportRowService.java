@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.domain.UserWord;
 import ru.olmi.domain.Word;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.dto.DictionaryImportRowResult;
 import ru.olmi.dto.enums.DictionaryImportRowStatus;
 import ru.olmi.exception.DictionaryImportException;
@@ -26,7 +26,7 @@ public class DictionaryImportRowService {
     private final TopicStorage topicStorage;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public DictionaryImportRowResult importRow(TelegramUser user, DictionaryImportRow row) {
+    public DictionaryImportRowResult importRow(TelegramUser user, DictionaryCsvRow row) {
         Word word = translationFinder.findOrCreateWord(row.word(), user.getPreferredFromLanguage(), user.getPreferredToLanguage());
 
         if (word == null) {

@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.dto.DictionaryImportResult;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.dto.DictionaryImportRowResult;
 import ru.olmi.dto.enums.DictionaryImportRowStatus;
 import ru.olmi.service.telegram.upload.DictionaryImportRowService;
@@ -36,18 +36,18 @@ class DictionaryImportServiceTest {
 
     @Test
     void shouldAggregateImportResult() {
-        List<DictionaryImportRow> rows = List.of(
-                new DictionaryImportRow(
+        List<DictionaryCsvRow> rows = List.of(
+                new DictionaryCsvRow(
                         "word1",
                         List.of(),
                         List.of()
                 ),
-                new DictionaryImportRow(
+                new DictionaryCsvRow(
                         "word2",
                         List.of(),
                         List.of()
                 ),
-                new DictionaryImportRow(
+                new DictionaryCsvRow(
                         "word3",
                         List.of(),
                         List.of()
@@ -74,15 +74,15 @@ class DictionaryImportServiceTest {
 
     @Test
     void shouldContinueImportWhenRowFails() {
-        DictionaryImportRow failedRow =
-                new DictionaryImportRow(
+        DictionaryCsvRow failedRow =
+                new DictionaryCsvRow(
                         "broken",
                         List.of(),
                         List.of()
                 );
 
-        DictionaryImportRow successfulRow =
-                new DictionaryImportRow(
+        DictionaryCsvRow successfulRow =
+                new DictionaryCsvRow(
                         "reliable",
                         List.of(),
                         List.of()
@@ -106,8 +106,8 @@ class DictionaryImportServiceTest {
 
     @Test
     void shouldUseExceptionClassWhenMessageIsNull() {
-        DictionaryImportRow row =
-                new DictionaryImportRow(
+        DictionaryCsvRow row =
+                new DictionaryCsvRow(
                         "broken",
                         List.of(),
                         List.of()
@@ -138,19 +138,19 @@ class DictionaryImportServiceTest {
 
     @Test
     void shouldMergeRowsWithSameWordIgnoringCase() {
-        DictionaryImportRow first = new DictionaryImportRow(
+        DictionaryCsvRow first = new DictionaryCsvRow(
                 "Reliable",
                 List.of("надёжный"),
                 List.of("Work")
         );
 
-        DictionaryImportRow second = new DictionaryImportRow(
+        DictionaryCsvRow second = new DictionaryCsvRow(
                 "reliable",
                 List.of("достоверный"),
                 List.of("Character and personality")
         );
 
-        when(rowService.importRow(user, new DictionaryImportRow(
+        when(rowService.importRow(user, new DictionaryCsvRow(
                 "Reliable",
                 List.of("надёжный", "достоверный"),
                 List.of("Work", "Character and personality")
@@ -161,32 +161,32 @@ class DictionaryImportServiceTest {
         assertThat(result.getProcessed()).isEqualTo(1);
         assertThat(result.getAdded()).isEqualTo(1);
 
-        verify(rowService).importRow(user, new DictionaryImportRow("Reliable", List.of("надёжный", "достоверный"),
+        verify(rowService).importRow(user, new DictionaryCsvRow("Reliable", List.of("надёжный", "достоверный"),
                 List.of("Work", "Character and personality")));
     }
 
     @Test
     void shouldMergeTranslationsIgnoringCase() {
-        DictionaryImportRow first = new DictionaryImportRow(
+        DictionaryCsvRow first = new DictionaryCsvRow(
                 "reliable",
                 List.of("Надёжный", "достоверный"),
                 List.of()
         );
 
-        DictionaryImportRow second = new DictionaryImportRow(
+        DictionaryCsvRow second = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный", "НАДЁЖНЫЙ", "Надежный"),
                 List.of()
         );
 
-        when(rowService.importRow(eq(user), any(DictionaryImportRow.class)
+        when(rowService.importRow(eq(user), any(DictionaryCsvRow.class)
         )).thenReturn(new DictionaryImportRowResult(DictionaryImportRowStatus.ADDED));
 
         DictionaryImportResult result = service.importWords(user, List.of(first, second));
 
         assertThat(result.getProcessed()).isEqualTo(1);
 
-        ArgumentCaptor<DictionaryImportRow> captor = ArgumentCaptor.forClass(DictionaryImportRow.class);
+        ArgumentCaptor<DictionaryCsvRow> captor = ArgumentCaptor.forClass(DictionaryCsvRow.class);
 
         verify(rowService).importRow(eq(user), captor.capture());
 
@@ -195,13 +195,13 @@ class DictionaryImportServiceTest {
 
     @Test
     void shouldMergeTopicsIgnoringCase() {
-        DictionaryImportRow first = new DictionaryImportRow(
+        DictionaryCsvRow first = new DictionaryCsvRow(
                 "reliable",
                 List.of(),
                 List.of("Work", "Character and personality")
         );
 
-        DictionaryImportRow second = new DictionaryImportRow(
+        DictionaryCsvRow second = new DictionaryCsvRow(
                 "RELIABLE",
                 List.of(),
                 List.of(
@@ -211,13 +211,13 @@ class DictionaryImportServiceTest {
                 )
         );
 
-        when(rowService.importRow(eq(user), any(DictionaryImportRow.class)
+        when(rowService.importRow(eq(user), any(DictionaryCsvRow.class)
         )).thenReturn(new DictionaryImportRowResult(DictionaryImportRowStatus.ADDED));
 
         DictionaryImportResult result = service.importWords(user, List.of(first, second));
 
         assertThat(result.getProcessed()).isEqualTo(1);
-        ArgumentCaptor<DictionaryImportRow> captor = ArgumentCaptor.forClass(DictionaryImportRow.class);
+        ArgumentCaptor<DictionaryCsvRow> captor = ArgumentCaptor.forClass(DictionaryCsvRow.class);
         verify(rowService).importRow(eq(user), captor.capture());
 
         assertThat(captor.getValue().topics()).containsExactly(

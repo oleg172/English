@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.exception.DictionaryImportException;
 import ru.olmi.service.telegram.upload.DictionaryImportParser;
 
@@ -25,7 +25,7 @@ class DictionaryImportParserTest {
                 conscientious,,"Character and personality"
                 """;
 
-        List<DictionaryImportRow> result = parser.parse(input(csv));
+        List<DictionaryCsvRow> result = parser.parse(input(csv));
 
         assertThat(result).hasSize(3);
 
@@ -48,7 +48,7 @@ class DictionaryImportParserTest {
                   ambitious  ," амбициозный ; целеустремлённый "," Work ; Character "
                 """;
 
-        List<DictionaryImportRow> result = parser.parse(input(csv));
+        List<DictionaryCsvRow> result = parser.parse(input(csv));
 
         assertThat(result.get(0).word())
                 .isEqualTo("ambitious");
@@ -67,7 +67,7 @@ class DictionaryImportParserTest {
                 ambitious,"амбициозный;амбициозный","Work;Work"
                 """;
 
-        List<DictionaryImportRow> result = parser.parse(input(csv));
+        List<DictionaryCsvRow> result = parser.parse(input(csv));
 
         assertThat(result.get(0).translations())
                 .containsExactly("амбициозный");
@@ -87,10 +87,10 @@ class DictionaryImportParserTest {
                 reliable,"надёжный","Work"
                 """;
 
-        List<DictionaryImportRow> result = parser.parse(input(csv));
+        List<DictionaryCsvRow> result = parser.parse(input(csv));
 
         assertThat(result)
-                .extracting(DictionaryImportRow::word)
+                .extracting(DictionaryCsvRow::word)
                 .containsExactly("ambitious", "reliable");
     }
 
@@ -103,7 +103,7 @@ class DictionaryImportParserTest {
                 conscientious,,"Character"
                 """;
 
-        List<DictionaryImportRow> result = parser.parse(input(csv));
+        List<DictionaryCsvRow> result = parser.parse(input(csv));
 
         assertThat(result).hasSize(3);
 
@@ -169,7 +169,7 @@ class DictionaryImportParserTest {
 
     @Test
     void shouldReturnEmptyListForEmptyFile() {
-        List<DictionaryImportRow> result =
+        List<DictionaryCsvRow> result =
                 parser.parse(input(""));
 
         assertThat(result).isEmpty();

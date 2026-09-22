@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.exception.DictionaryImportException;
 
 @Component
@@ -21,7 +21,7 @@ public class DictionaryImportParser {
     private static final String HEADER_TRANSLATIONS = "translations";
     private static final String HEADER_TOPICS = "topics";
 
-    public List<DictionaryImportRow> parse(InputStream inputStream) {
+    public List<DictionaryCsvRow> parse(InputStream inputStream) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
@@ -31,7 +31,7 @@ public class DictionaryImportParser {
             }
             validateHeader(header);
 
-            List<DictionaryImportRow> result = new ArrayList<>();
+            List<DictionaryCsvRow> result = new ArrayList<>();
 
             String line;
             int lineNumber = 1;
@@ -51,7 +51,7 @@ public class DictionaryImportParser {
         }
     }
 
-    private DictionaryImportRow parseRow(String line, int lineNumber) {
+    private DictionaryCsvRow parseRow(String line, int lineNumber) {
         List<String> columns = parseColumns(line);
 
         if (columns.size() != 3) {
@@ -64,7 +64,7 @@ public class DictionaryImportParser {
             throw new DictionaryImportException("Word is empty at line " + lineNumber);
         }
 
-        return new DictionaryImportRow(word, parseValues(columns.get(1)), parseValues(columns.get(2))
+        return new DictionaryCsvRow(word, parseValues(columns.get(1)), parseValues(columns.get(2))
         );
     }
 

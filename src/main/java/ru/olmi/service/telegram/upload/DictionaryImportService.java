@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.dto.DictionaryImportResult;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.dto.DictionaryImportRowResult;
 
 @Component
@@ -19,10 +19,10 @@ public class DictionaryImportService {
 
     private final DictionaryImportRowService rowService;
 
-    public DictionaryImportResult importWords(TelegramUser user, List<DictionaryImportRow> rows) {
+    public DictionaryImportResult importWords(TelegramUser user, List<DictionaryCsvRow> rows) {
         DictionaryImportResult result = new DictionaryImportResult();
 
-        for (DictionaryImportRow row : mergeRows(rows)) {
+        for (DictionaryCsvRow row : mergeRows(rows)) {
             result.setProcessed(result.getProcessed() + 1);
 
             try {
@@ -38,20 +38,20 @@ public class DictionaryImportService {
         return result;
     }
 
-    private List<DictionaryImportRow> mergeRows(List<DictionaryImportRow> rows) {
-        Map<String, DictionaryImportRow> merged = new LinkedHashMap<>();
+    private List<DictionaryCsvRow> mergeRows(List<DictionaryCsvRow> rows) {
+        Map<String, DictionaryCsvRow> merged = new LinkedHashMap<>();
 
-        for (DictionaryImportRow row : rows) {
+        for (DictionaryCsvRow row : rows) {
             String key = row.word().toLowerCase(Locale.ROOT);
 
-            DictionaryImportRow existing = merged.get(key);
+            DictionaryCsvRow existing = merged.get(key);
 
             if (existing == null) {
                 merged.put(key, row);
                 continue;
             }
 
-            merged.put(key, new DictionaryImportRow(existing.word(), mergeValues(existing.translations(), row.translations()),
+            merged.put(key, new DictionaryCsvRow(existing.word(), mergeValues(existing.translations(), row.translations()),
                             mergeValues(existing.topics(), row.topics())));
         }
 

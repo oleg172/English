@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.dto.DictionaryImportResult;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.exception.DictionaryImportException;
 import ru.olmi.service.telegram.TelegramApi;
 import ru.olmi.service.telegram.handler.message.TelegramMessageHandlerDelegate;
@@ -43,7 +43,7 @@ public class DictionaryImportMessageHandler implements TelegramMessageHandlerDel
         }
 
         try (InputStream inputStream = telegramApi.downloadFile(message.getDocument().getFileId())) {
-            List<DictionaryImportRow> rows = parser.parse(inputStream);
+            List<DictionaryCsvRow> rows = parser.parse(inputStream);
             DictionaryImportResult result = importService.importWords(user, rows);
 
             dictionaryImportDialog.finish(user);

@@ -94,4 +94,13 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long> {
             @Param("toLanguage") String toLanguage
     );
 
+    @Query("""
+            select uw
+            from UserWord uw
+            join fetch uw.word
+            where uw.user.id = :userId
+            order by uw.id
+            """)
+    List<UserWord> findAllForExport(@Param("userId") Long userId);
+
 }

@@ -36,6 +36,7 @@ public class MainMenuKeyboard {
             case EDIT_WORD -> MainMenuCallback.EDIT_WORD;
             case MY_WORDS -> MainMenuCallback.MY_WORDS;
             case UPLOAD -> MainMenuCallback.IMPORT;
+            case EXPORT -> MainMenuCallback.EXPORT;
             case HELP -> MainMenuCallback.HELP;
         };
     }

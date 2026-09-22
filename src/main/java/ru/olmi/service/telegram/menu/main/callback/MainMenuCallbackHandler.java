@@ -6,9 +6,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.olmi.domain.TelegramUser;
+import ru.olmi.service.telegram.export.DictionaryExportService;
+import ru.olmi.service.telegram.export.DictionaryExportView;
 import ru.olmi.service.telegram.help.HelpView;
 import ru.olmi.service.telegram.menu.dictionary.UserDictionaryMenuService;
 import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
+import ru.olmi.service.telegram.menu.main.MainMenuView;
 import ru.olmi.service.telegram.search.UserWordSearchView;
 import ru.olmi.service.telegram.search.state.WordSearchDialogState;
 import ru.olmi.service.telegram.translate.TranslationView;
@@ -23,11 +26,13 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
     private final TranslationDialogState translationDialog;
     private final WordSearchDialogState wordSearchDialog;
     private final UserDictionaryMenuService userDictionaryService;
+    private final DictionaryExportService dictionaryExportService;
     private final DictionaryImportDialogState dictionaryImportDialog;
     private final TranslationView translationView;
     private final UserWordSearchView userWordSearchView;
     private final DictionaryImportView dictionaryImportView;
     private final HelpView helpView;
+    private final MainMenuView mainMenuView;
 
     @Override
     public boolean supports(CallbackQuery callbackQuery) {
@@ -37,6 +42,7 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
                 || MainMenuCallback.EDIT_WORD.equals(data)
                 || MainMenuCallback.MY_WORDS.equals(data)
                 || MainMenuCallback.IMPORT.equals(data)
+                || MainMenuCallback.EXPORT.equals(data)
                 || MainMenuCallback.HELP.equals(data);
     }
 
@@ -59,6 +65,11 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
 
         if (MainMenuCallback.IMPORT.equals(data)) {
             startImport(callbackQuery, user, sender);
+            return;
+        }
+
+        if (MainMenuCallback.EXPORT.equals(data)) {
+            startExport(callbackQuery, user, sender);
             return;
         }
 
@@ -90,6 +101,11 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
         dictionaryImportDialog.start(user);
 
         sender.accept(dictionaryImportView.enterFile(callbackQuery.getMessage().getChatId()));
+    }
+
+    private void startExport(CallbackQuery callbackQuery, TelegramUser user, Consumer<SendMessage> sender) {
+        dictionaryExportService.export(user, callbackQuery.getMessage().getChatId());
+        sender.accept(mainMenuView.show(callbackQuery.getMessage().getChatId()));
     }
 
     private void showHelp(CallbackQuery callbackQuery, Consumer<SendMessage> sender) {

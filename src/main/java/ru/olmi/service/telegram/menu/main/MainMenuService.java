@@ -14,6 +14,7 @@ public class MainMenuService {
                         new MainMenu.Item("✏️ Редактировать слово", MainMenu.Action.EDIT_WORD),
                         new MainMenu.Item("📚 Мои слова", MainMenu.Action.MY_WORDS),
                         new MainMenu.Item("📥 Загрузить слова", MainMenu.Action.UPLOAD),
+                        new MainMenu.Item("📤 Выгрузить слова", MainMenu.Action.EXPORT),
                         new MainMenu.Item("❓ Помощь", MainMenu.Action.HELP)
                 )
         );

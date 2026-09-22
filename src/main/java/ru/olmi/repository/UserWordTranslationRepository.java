@@ -1,5 +1,6 @@
 package ru.olmi.repository;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,12 @@ public interface UserWordTranslationRepository extends JpaRepository<UserWordTra
             where uwt.userWord.id = :userWordId
             """)
     List<UserWordTranslation> findTranslations(@Param("userWordId") Long userWordId);
+
+    @Query("""
+            select t
+            from UserWordTranslation t
+            where t.userWord.id in :userWordIds
+            order by t.userWord.id, t.id
+            """)
+    List<UserWordTranslation> findAllForExport(@Param("userWordIds") Collection<Long> userWordIds);
 }

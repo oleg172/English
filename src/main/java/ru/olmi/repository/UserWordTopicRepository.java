@@ -1,5 +1,6 @@
 package ru.olmi.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -98,4 +99,13 @@ public interface UserWordTopicRepository extends JpaRepository<UserWordTopic, Lo
             @Param("query") String query,
             Pageable pageable
     );
+
+    @Query("""
+            select distinct t
+            from UserWordTopic t
+            join fetch t.topic
+            where t.userWord.id in :userWordIds
+            order by t.userWord.id, t.id
+            """)
+    List<UserWordTopic> findAllForExport(@Param("userWordIds") Collection<Long> userWordIds);
 }

@@ -18,6 +18,7 @@ public record MainMenu(
         EDIT_WORD,
         MY_WORDS,
         UPLOAD,
+        EXPORT,
         HELP
     }
 }

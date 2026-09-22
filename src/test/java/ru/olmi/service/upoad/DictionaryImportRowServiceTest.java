@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.domain.UserWord;
 import ru.olmi.domain.Word;
-import ru.olmi.dto.DictionaryImportRow;
+import ru.olmi.dto.DictionaryCsvRow;
 import ru.olmi.dto.DictionaryImportRowResult;
 import ru.olmi.dto.enums.DictionaryImportRowStatus;
 import ru.olmi.repository.UserWordRepository;
@@ -56,7 +56,7 @@ class DictionaryImportRowServiceTest {
                 .setUser(user)
                 .setWord(word);
 
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный"),
                 List.of("Work")
@@ -87,7 +87,7 @@ class DictionaryImportRowServiceTest {
                 .setUser(user)
                 .setWord(word);
 
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный"),
                 List.of("Work")
@@ -109,7 +109,7 @@ class DictionaryImportRowServiceTest {
 
     @Test
     void shouldPropagateException() {
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of(),
                 List.of()
@@ -132,7 +132,7 @@ class DictionaryImportRowServiceTest {
                 .setId(10L)
                 .setWord("reliable");
 
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный"),
                 List.of("Work")
@@ -168,7 +168,7 @@ class DictionaryImportRowServiceTest {
                 .setId(10L)
                 .setWord("reliable");
 
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный"),
                 List.of("Work")
@@ -202,7 +202,7 @@ class DictionaryImportRowServiceTest {
                 .setId(10L)
                 .setWord("reliable");
 
-        DictionaryImportRow row = new DictionaryImportRow(
+        DictionaryCsvRow row = new DictionaryCsvRow(
                 "reliable",
                 List.of("надёжный"),
                 List.of("Work")
