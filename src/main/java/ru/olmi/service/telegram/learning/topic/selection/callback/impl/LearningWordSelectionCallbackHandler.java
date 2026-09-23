@@ -28,7 +28,9 @@ public class LearningWordSelectionCallbackHandler implements TelegramCallbackHan
                 || LearningWordSelectionCallback.isPrevious(data)
                 || LearningWordSelectionCallback.isCurrent(data)
                 || LearningWordSelectionCallback.isBack(data)
-                || LearningWordSelectionCallback.isConfirm(data);
+                || LearningWordSelectionCallback.isConfirm(data)
+                || LearningWordSelectionCallback.isPageSelectAll(data)
+                || LearningWordSelectionCallback.isTopicSelectAll(data);
     }
 
     @Override
@@ -71,6 +73,16 @@ public class LearningWordSelectionCallbackHandler implements TelegramCallbackHan
 
         if (LearningWordSelectionCallback.isBack(data)) {
             editor.accept(learningTopicService.editTopics(user, chatId, messageId));
+        }
+
+        if (LearningWordSelectionCallback.isPageSelectAll(data)) {
+            editor.accept(selectionService.togglePageWords(user, chatId, messageId));
+            return;
+        }
+
+        if (LearningWordSelectionCallback.isTopicSelectAll(data)) {
+            editor.accept(selectionService.toggleTopicWords(user, chatId, messageId));
+            return;
         }
     }
 }

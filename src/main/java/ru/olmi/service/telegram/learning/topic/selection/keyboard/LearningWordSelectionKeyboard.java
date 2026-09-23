@@ -29,6 +29,14 @@ public class LearningWordSelectionKeyboard {
         keyboard.add(navigation(page, totalPages));
 
         keyboard.add(
+                List.of(button("☑️ Все слова в топике", LearningWordSelectionCallback.topicSelectAll()))
+        );
+
+        keyboard.add(
+                List.of(button("☑️ Все на странице", LearningWordSelectionCallback.pageSelectAll()))
+        );
+
+        keyboard.add(
                 List.of(button("Выбрано: " + selectedWordIds.size(), LearningWordSelectionCallback.current()))
         );
 

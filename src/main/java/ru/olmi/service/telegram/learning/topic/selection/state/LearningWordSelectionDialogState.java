@@ -1,5 +1,6 @@
 package ru.olmi.service.telegram.learning.topic.selection.state;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,22 @@ public class LearningWordSelectionDialogState {
                 context.page(),
                 selectedWordIds)
         );
+    }
+
+    public void selectWords(TelegramUser user, Collection<Long> userWordIds) {
+        SelectionContext context = getContext(user);
+        Set<Long> selectedWordIds = new LinkedHashSet<>(context.selectedWordIds());
+        selectedWordIds.addAll(userWordIds);
+
+        contexts.put(user.getId(), new SelectionContext(context.topicId(), context.page(), selectedWordIds));
+    }
+
+    public void deselectWords(TelegramUser user, Collection<Long> userWordIds) {
+        SelectionContext context = getContext(user);
+        Set<Long> selectedWordIds = new LinkedHashSet<>(context.selectedWordIds());
+        selectedWordIds.removeAll(userWordIds);
+
+        contexts.put(user.getId(), new SelectionContext(context.topicId(), context.page(), selectedWordIds));
     }
 
     public Set<Long> getSelectedWordIds(TelegramUser user) {

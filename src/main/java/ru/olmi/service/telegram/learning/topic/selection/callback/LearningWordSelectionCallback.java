@@ -7,6 +7,8 @@ public final class LearningWordSelectionCallback {
     public static final String CURRENT = "learning:words:current";
     public static final String CONFIRM = "learning:words:confirm";
     public static final String BACK = "learning:words:back";
+    public static final String PAGE_SELECT_ALL = "learning:words:page-select-all";
+    public static final String TOPIC_SELECT_ALL = "learning:words:topic-select-all";
 
     private LearningWordSelectionCallback() {}
 
@@ -60,5 +62,21 @@ public final class LearningWordSelectionCallback {
 
     public static boolean isBack(String data) {
         return BACK.equals(data);
+    }
+
+    public static String pageSelectAll() {
+        return PAGE_SELECT_ALL;
+    }
+
+    public static String topicSelectAll() {
+        return TOPIC_SELECT_ALL;
+    }
+
+    public static boolean isPageSelectAll(String callbackData) {
+        return PAGE_SELECT_ALL.equals(callbackData);
+    }
+
+    public static boolean isTopicSelectAll(String callbackData) {
+        return TOPIC_SELECT_ALL.equals(callbackData);
     }
 }

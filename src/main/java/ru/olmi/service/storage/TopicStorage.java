@@ -94,4 +94,9 @@ public class TopicStorage {
     public Page<UserWord> searchWordsByTopic(TelegramUser user, Long topicId, String query, int page) {
         return userWordTopicRepository.searchWordsByTopic(user.getId(), topicId, query, PageRequest.of(page, 10));
     }
+
+    @Transactional(readOnly = true)
+    public List<UserWord> findAllWordsByTopic(TelegramUser user, Long topicId) {
+        return userWordTopicRepository.findAllWordsByTopic(user.getId(), topicId);
+    }
 }

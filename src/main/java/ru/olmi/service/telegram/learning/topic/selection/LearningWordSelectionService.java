@@ -2,6 +2,7 @@ package ru.olmi.service.telegram.learning.topic.selection;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -113,5 +114,49 @@ public class LearningWordSelectionService {
         state.setPage(user, words.getNumber());
 
         return view.words(chatId, topic, words, state.getSelectedWordIds(user));
+    }
+
+    public EditMessageText togglePageWords(TelegramUser user, Long chatId, Integer messageId) {
+        Long topicId = state.getTopicId(user);
+
+        Page<UserWord> words = topicStorage.findWordsByTopic(user, topicId, state.getPage(user));
+
+        Set<Long> wordIds = words.getContent().stream()
+                                 .map(UserWord::getId)
+                                 .collect(Collectors.toSet());
+
+        Set<Long> selectedWordIds = state.getSelectedWordIds(user);
+
+        boolean allSelected = selectedWordIds.containsAll(wordIds);
+
+        if (allSelected) {
+            state.deselectWords(user, wordIds);
+        } else {
+            state.selectWords(user, wordIds);
+        }
+
+        return current(user, chatId, messageId);
+    }
+
+    public EditMessageText toggleTopicWords(TelegramUser user, Long chatId, Integer messageId) {
+        Long topicId = state.getTopicId(user);
+
+        List<UserWord> words = topicStorage.findAllWordsByTopic(user, topicId);
+
+        Set<Long> wordIds = words.stream()
+                                 .map(UserWord::getId)
+                                 .collect(Collectors.toSet());
+
+        Set<Long> selectedWordIds = state.getSelectedWordIds(user);
+
+        boolean allSelected = selectedWordIds.containsAll(wordIds);
+
+        if (allSelected) {
+            state.deselectWords(user, wordIds);
+        } else {
+            state.selectWords(user, wordIds);
+        }
+
+        return current(user, chatId, messageId);
     }
 }
