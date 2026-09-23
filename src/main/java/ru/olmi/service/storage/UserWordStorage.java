@@ -24,10 +24,16 @@ public class UserWordStorage {
     private static final int PAGE_SIZE = 10;
 
     private final UserWordRepository userWordRepository;
+    private final UserLearningWordStorage userLearningWordStorage;
 
     public UserWord findOrCreate(TelegramUser user, Word word) {
         return userWordRepository.findByUserIdAndWordId(user.getId(), word.getId())
-                                 .orElseGet(() -> userWordRepository.save(new UserWord().setUser(user).setWord(word)));
+                                 .orElseGet(() -> {
+                                     var userWord = userWordRepository.save(new UserWord().setUser(user).setWord(word));
+                                     userLearningWordStorage.create(userWord);
+
+                                     return userWord;
+                                 });
     }
 
     @Transactional(readOnly = true)

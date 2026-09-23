@@ -1,0 +1,28 @@
+package ru.olmi.repository;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import ru.olmi.domain.UserLearningWord;
+
+@Repository
+public interface UserLearningWordRepository extends JpaRepository<UserLearningWord, Long> {
+
+    Optional<UserLearningWord> findByUserWordIdAndUserWordUserId(Long userWordId, Long userId);
+
+    List<UserLearningWord> findAllByUserWordIdInAndUserWordUserId(Collection<Long> userWordIds, Long userId);
+
+    @Query("""
+            select distinct ulw
+            from UserLearningWord ulw
+            join fetch ulw.userWord uw
+            join fetch uw.word
+            where uw.user.id = :userId
+              and ulw.userWord.id in :userWordIds
+            """)
+    List<UserLearningWord> findForTraining(@Param("userId") Long userId, @Param("userWordIds") Collection<Long> userWordIds);
+}

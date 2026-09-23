@@ -108,4 +108,27 @@ public interface UserWordTopicRepository extends JpaRepository<UserWordTopic, Lo
             order by t.userWord.id, t.id
             """)
     List<UserWordTopic> findAllForExport(@Param("userWordIds") Collection<Long> userWordIds);
+
+    @Query("""
+            select uw
+            from UserWordTopic uwt
+            join uwt.userWord uw
+            join fetch uw.word
+            where uwt.topic.id = :topicId
+              and uw.user.id = :userId
+              and uw.id in :userWordIds
+            order by uw.word.word
+            """)
+    List<UserWord> findWordsByTopicAndIds(@Param("userId") Long userId, @Param("topicId") Long topicId, @Param("userWordIds") Collection<Long> userWordIds);
+
+    @Query("""
+            select uw
+            from UserWordTopic uwt
+            join uwt.userWord uw
+            join fetch uw.word
+            where uwt.topic.id = :topicId
+              and uw.user.id = :userId
+            order by uw.word.word
+            """)
+    List<UserWord> findAllWordsByTopic(@Param("userId") Long userId, @Param("topicId") Long topicId);
 }

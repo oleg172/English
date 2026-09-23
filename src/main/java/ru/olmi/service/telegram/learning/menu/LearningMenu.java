@@ -1,8 +1,8 @@
-package ru.olmi.service.telegram.menu.main;
+package ru.olmi.service.telegram.learning.menu;
 
 import java.util.List;
 
-public record MainMenu(
+public record LearningMenu(
         String text,
         List<Item> items
 ) {
@@ -14,12 +14,6 @@ public record MainMenu(
     }
 
     public enum Action {
-        TRANSLATE,
-        EDIT_WORD,
-        MY_WORDS,
-        LEARNING,
-        UPLOAD,
-        EXPORT,
-        HELP
+        TOPIC
     }
 }

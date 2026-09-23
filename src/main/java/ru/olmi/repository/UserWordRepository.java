@@ -1,5 +1,6 @@
 package ru.olmi.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -78,15 +79,15 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long> {
     );
 
     @Query("""
-        select distinct uw
-        from UserWord uw
-        join fetch uw.word w
-        join uw.translations t
-        where uw.user.id = :userId
-          and w.fromLanguage = :fromLanguage
-          and w.toLanguage = :toLanguage
-          and lower(t.translation) = lower(:translation)
-        """)
+            select distinct uw
+            from UserWord uw
+            join fetch uw.word w
+            join uw.translations t
+            where uw.user.id = :userId
+              and w.fromLanguage = :fromLanguage
+              and w.toLanguage = :toLanguage
+              and lower(t.translation) = lower(:translation)
+            """)
     List<UserWord> findByUserTranslation(
             @Param("userId") Long userId,
             @Param("translation") String translation,
@@ -102,5 +103,15 @@ public interface UserWordRepository extends JpaRepository<UserWord, Long> {
             order by uw.id
             """)
     List<UserWord> findAllForExport(@Param("userId") Long userId);
+
+    @Query("""
+            select uw
+            from UserWord uw
+            join fetch uw.word
+            where uw.user.id = :userId
+              and uw.id not in :excludedUserWordIds
+            order by uw.word.word
+            """)
+    List<UserWord> findAllForTraining(@Param("userId") Long userId, @Param("excludedUserWordIds") Collection<Long> excludedUserWordIds);
 
 }

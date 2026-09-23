@@ -7,10 +7,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.service.telegram.export.DictionaryExportService;
-import ru.olmi.service.telegram.export.DictionaryExportView;
-import ru.olmi.service.telegram.help.HelpView;
-import ru.olmi.service.telegram.menu.dictionary.UserDictionaryMenuService;
 import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
+import ru.olmi.service.telegram.help.HelpView;
+import ru.olmi.service.telegram.learning.menu.LearningMenuView;
+import ru.olmi.service.telegram.menu.dictionary.UserDictionaryMenuService;
 import ru.olmi.service.telegram.menu.main.MainMenuView;
 import ru.olmi.service.telegram.search.UserWordSearchView;
 import ru.olmi.service.telegram.search.state.WordSearchDialogState;
@@ -33,6 +33,7 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
     private final DictionaryImportView dictionaryImportView;
     private final HelpView helpView;
     private final MainMenuView mainMenuView;
+    private final LearningMenuView learningMenuView;
 
     @Override
     public boolean supports(CallbackQuery callbackQuery) {
@@ -41,6 +42,7 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
         return MainMenuCallback.TRANSLATE.equals(data)
                 || MainMenuCallback.EDIT_WORD.equals(data)
                 || MainMenuCallback.MY_WORDS.equals(data)
+                || MainMenuCallback.LEARNING.equals(data)
                 || MainMenuCallback.IMPORT.equals(data)
                 || MainMenuCallback.EXPORT.equals(data)
                 || MainMenuCallback.HELP.equals(data);
@@ -61,6 +63,11 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
 
         if (MainMenuCallback.MY_WORDS.equals(data)) {
             showMyWords(callbackQuery, sender);
+        }
+
+        if (MainMenuCallback.LEARNING.equals(data)) {
+            startLearning(callbackQuery, sender);
+            return;
         }
 
         if (MainMenuCallback.IMPORT.equals(data)) {
@@ -95,6 +102,10 @@ public class MainMenuCallbackHandler implements TelegramCallbackHandlerDelegate 
     //показать 'Мой словарь' для пользователя
     private void showMyWords(CallbackQuery callbackQuery, Consumer<SendMessage> sender) {
         sender.accept(userDictionaryService.show(callbackQuery.getMessage().getChatId()));
+    }
+
+    private void startLearning(CallbackQuery callbackQuery, Consumer<SendMessage> sender) {
+        sender.accept(learningMenuView.show(callbackQuery.getMessage().getChatId()));
     }
 
     private void startImport(CallbackQuery callbackQuery, TelegramUser user, Consumer<SendMessage> sender) {
