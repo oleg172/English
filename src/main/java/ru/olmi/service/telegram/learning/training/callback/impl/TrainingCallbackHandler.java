@@ -1,4 +1,4 @@
-package ru.olmi.service.telegram.learning.topic.selection.callback.impl;
+package ru.olmi.service.telegram.learning.training.callback.impl;
 
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,9 @@ import ru.olmi.dto.TrainingAnswerResult;
 import ru.olmi.service.impl.training.TrainingService;
 import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
 import ru.olmi.service.telegram.learning.menu.LearningMenuView;
-import ru.olmi.service.telegram.learning.topic.selection.callback.TrainingCallback;
-import ru.olmi.service.telegram.learning.topic.selection.view.TrainingQuestionTelegramView;
-import ru.olmi.service.telegram.learning.topic.selection.view.TrainingResultTelegramView;
+import ru.olmi.service.telegram.learning.training.view.TrainingQuestionTelegramView;
+import ru.olmi.service.telegram.learning.training.view.TrainingResultTelegramView;
+import ru.olmi.service.telegram.learning.training.callback.TrainingCallback;
 
 @Component
 @RequiredArgsConstructor

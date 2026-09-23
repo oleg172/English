@@ -1,4 +1,4 @@
-package ru.olmi.service.telegram.learning.topic.selection.callback;
+package ru.olmi.service.telegram.learning.training.callback;
 
 public final class TrainingCallback {
     public static final String ANSWER_PREFIX = "training:answer:";

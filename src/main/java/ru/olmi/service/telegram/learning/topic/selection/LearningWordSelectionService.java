@@ -18,7 +18,7 @@ import ru.olmi.service.impl.training.TrainingSessionService;
 import ru.olmi.service.storage.TopicStorage;
 import ru.olmi.service.telegram.learning.topic.selection.state.LearningWordSelectionDialogState;
 import ru.olmi.service.telegram.learning.topic.selection.view.LearningWordSelectionView;
-import ru.olmi.service.telegram.learning.topic.selection.view.TrainingQuestionTelegramView;
+import ru.olmi.service.telegram.learning.training.view.TrainingQuestionTelegramView;
 
 @Component
 @RequiredArgsConstructor

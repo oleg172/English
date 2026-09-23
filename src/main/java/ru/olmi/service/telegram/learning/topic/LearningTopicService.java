@@ -15,7 +15,7 @@ import ru.olmi.service.impl.training.TrainingService;
 import ru.olmi.service.impl.training.TrainingSessionService;
 import ru.olmi.service.storage.TopicStorage;
 import ru.olmi.service.telegram.learning.topic.selection.LearningWordSelectionService;
-import ru.olmi.service.telegram.learning.topic.selection.view.TrainingQuestionTelegramView;
+import ru.olmi.service.telegram.learning.training.view.TrainingQuestionTelegramView;
 import ru.olmi.service.telegram.learning.topic.state.LearningTopicDialogState;
 import ru.olmi.service.telegram.learning.topic.view.LearningTopicView;
 

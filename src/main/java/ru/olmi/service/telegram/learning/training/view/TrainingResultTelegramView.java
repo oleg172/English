@@ -1,4 +1,4 @@
-package ru.olmi.service.telegram.learning.topic.selection.view;
+package ru.olmi.service.telegram.learning.training.view;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.olmi.dto.TrainingAnswerResult;
 import ru.olmi.dto.TrainingMistake;
 import ru.olmi.service.telegram.common.TelegramMessage;
-import ru.olmi.service.telegram.learning.topic.selection.keyboard.TrainingResultKeyboard;
+import ru.olmi.service.telegram.learning.training.keyboard.TrainingResultKeyboard;
 
 @Component
 @RequiredArgsConstructor
