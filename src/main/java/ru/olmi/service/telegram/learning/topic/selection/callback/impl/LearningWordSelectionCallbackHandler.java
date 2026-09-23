@@ -4,16 +4,17 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.olmi.domain.TelegramUser;
-import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
+import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerWithEditDelegate;
 import ru.olmi.service.telegram.learning.topic.LearningTopicService;
 import ru.olmi.service.telegram.learning.topic.selection.LearningWordSelectionService;
 import ru.olmi.service.telegram.learning.topic.selection.callback.LearningWordSelectionCallback;
 
 @Component
 @RequiredArgsConstructor
-public class LearningWordSelectionCallbackHandler implements TelegramCallbackHandlerDelegate {
+public class LearningWordSelectionCallbackHandler implements TelegramCallbackHandlerWithEditDelegate {
 
     private final LearningWordSelectionService selectionService;
     private final LearningTopicService learningTopicService;
@@ -26,34 +27,40 @@ public class LearningWordSelectionCallbackHandler implements TelegramCallbackHan
                 || LearningWordSelectionCallback.isNext(data)
                 || LearningWordSelectionCallback.isPrevious(data)
                 || LearningWordSelectionCallback.isCurrent(data)
-                || LearningWordSelectionCallback.isConfirm(data)
-                || LearningWordSelectionCallback.isBack(data);
+                || LearningWordSelectionCallback.isBack(data)
+                || LearningWordSelectionCallback.isConfirm(data);
     }
 
     @Override
-    public void handle(CallbackQuery callbackQuery, TelegramUser user, Consumer<SendMessage> sender) {
+    public void handle(
+            CallbackQuery callbackQuery,
+            TelegramUser user,
+            Consumer<SendMessage> sender,
+            Consumer<EditMessageText> editor
+    ) {
         String data = callbackQuery.getData();
         Long chatId = callbackQuery.getMessage().getChatId();
+        Integer messageId = callbackQuery.getMessage().getMessageId();
 
         if (LearningWordSelectionCallback.isWord(data)) {
             Long userWordId = LearningWordSelectionCallback.getUserWordId(data);
 
-            sender.accept(selectionService.toggleWord(user, chatId, userWordId));
+            editor.accept(selectionService.toggleWord(user, chatId, messageId, userWordId));
             return;
         }
 
         if (LearningWordSelectionCallback.isNext(data)) {
-            sender.accept(selectionService.next(user, chatId));
+            editor.accept(selectionService.next(user, chatId, messageId));
             return;
         }
 
         if (LearningWordSelectionCallback.isPrevious(data)) {
-            sender.accept(selectionService.previous(user, chatId));
+            editor.accept(selectionService.previous(user, chatId, messageId));
             return;
         }
 
         if (LearningWordSelectionCallback.isCurrent(data)) {
-            sender.accept(selectionService.current(user, chatId));
+            editor.accept(selectionService.current(user, chatId, messageId));
             return;
         }
 
@@ -63,7 +70,7 @@ public class LearningWordSelectionCallbackHandler implements TelegramCallbackHan
         }
 
         if (LearningWordSelectionCallback.isBack(data)) {
-            sender.accept(learningTopicService.topics(user, chatId));
+            editor.accept(learningTopicService.editTopics(user, chatId, messageId));
         }
     }
 }

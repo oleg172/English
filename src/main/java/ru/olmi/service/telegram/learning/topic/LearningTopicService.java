@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.domain.Topic;
 import ru.olmi.domain.TrainingSession;
@@ -91,5 +92,19 @@ public class LearningTopicService {
         }
 
         return learningWordSelectionService.start(user, chatId, topicId);
+    }
+
+    public EditMessageText editTopics(TelegramUser user, Long chatId, Integer messageId) {
+        state.start(user);
+
+        Page<Topic> result = topicStorage.findTopicsForUser(user, 0);
+
+        if (result.isEmpty()) {
+            return view.editEmptyTopics(chatId, messageId);
+        }
+
+        state.setPage(user, result.getNumber());
+
+        return view.editTopics(chatId, messageId, result);
     }
 }
