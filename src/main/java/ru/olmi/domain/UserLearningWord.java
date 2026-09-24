@@ -34,6 +34,17 @@ import ru.olmi.domain.enums.UserLearningWordStatus;
 @Accessors(chain = true)
 public class UserLearningWord extends BaseEntity {
 
+    private static final long ONE_HOUR = 60 * 60;
+    private static final long ONE_DAY = 24 * ONE_HOUR;
+
+    private static final long[] LEARNING_INTERVALS = {
+            ONE_HOUR,
+            ONE_DAY,
+            2 * ONE_DAY,
+            4 * ONE_DAY,
+            7 * ONE_DAY
+    };
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -102,4 +113,55 @@ public class UserLearningWord extends BaseEntity {
      */
     @Column(name = "next_review_at")
     private Instant nextReviewAt;
+
+    public void correctAnswer(Instant now) {
+        correctAnswers++;
+        lastReviewedAt = now;
+
+        if (status == UserLearningWordStatus.REVIEW) {
+            return;
+        }
+
+        if (status == UserLearningWordStatus.NEW) {
+            startLearning(now);
+            return;
+        }
+
+        if (now.isBefore(nextReviewAt)) {
+            return;
+        }
+
+        consecutiveCorrectAnswers++;
+
+        if (consecutiveCorrectAnswers >= LEARNING_INTERVALS.length) {
+            status = UserLearningWordStatus.REVIEW;
+            return;
+        }
+
+        scheduleNextLearningReview(now);
+    }
+
+    public void incorrectAnswer(Instant now) {
+        incorrectAnswers++;
+        lastReviewedAt = now;
+        status = UserLearningWordStatus.LEARNING;
+        consecutiveCorrectAnswers = Math.max(0, consecutiveCorrectAnswers - 1);
+
+        scheduleNextLearningReview(now);
+    }
+
+    private void startLearning(Instant now) {
+        status = UserLearningWordStatus.LEARNING;
+        consecutiveCorrectAnswers = 0;
+
+        intervalSeconds = LEARNING_INTERVALS[0];
+        nextReviewAt = now.plusSeconds(intervalSeconds);
+    }
+
+    private void scheduleNextLearningReview(Instant now) {
+        int intervalIndex = Math.min(consecutiveCorrectAnswers, LEARNING_INTERVALS.length - 1);
+
+        intervalSeconds = LEARNING_INTERVALS[intervalIndex];
+        nextReviewAt = now.plusSeconds(intervalSeconds);
+    }
 }

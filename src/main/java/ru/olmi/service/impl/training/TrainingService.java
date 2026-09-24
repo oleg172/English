@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.domain.TrainingSession;
 import ru.olmi.domain.TrainingSessionWord;
+import ru.olmi.domain.UserLearningWord;
 import ru.olmi.domain.Word;
 import ru.olmi.domain.enums.TrainingSessionStatus;
 import ru.olmi.dto.TrainingAnswerResult;
@@ -61,6 +62,14 @@ public class TrainingService {
 
         String selectedAnswer = answers.get(answerIndex);
         boolean correct = selectedAnswer.equals(sessionWord.getCorrectAnswer());
+
+        UserLearningWord learningWord = sessionWord.getUserLearningWord();
+        Instant now = Instant.now();
+        if (correct) {
+            learningWord.correctAnswer(now);
+        } else {
+            learningWord.incorrectAnswer(now);
+        }
 
         sessionWord.setAnswered(true)
                    .setSelectedAnswer(selectedAnswer)
