@@ -45,6 +45,12 @@ public class UserLearningWord extends BaseEntity {
             7 * ONE_DAY
     };
 
+    private static final BigDecimal INITIAL_EASE_FACTOR = BigDecimal.valueOf(2.5);
+    private static final BigDecimal EASE_FACTOR_INCREMENT = BigDecimal.valueOf(0.1);
+    private static final BigDecimal EASE_FACTOR_DECREMENT = BigDecimal.valueOf(0.2);
+    private static final BigDecimal MIN_EASE_FACTOR = BigDecimal.valueOf(1.3);
+    private static final BigDecimal MAX_EASE_FACTOR = BigDecimal.valueOf(3.0);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -118,32 +124,39 @@ public class UserLearningWord extends BaseEntity {
         correctAnswers++;
         lastReviewedAt = now;
 
-        if (status == UserLearningWordStatus.REVIEW) {
-            return;
-        }
-
         if (status == UserLearningWordStatus.NEW) {
             startLearning(now);
             return;
         }
 
-        if (now.isBefore(nextReviewAt)) {
+        if (status == UserLearningWordStatus.LEARNING) {
+            if (now.isBefore(nextReviewAt)) {
+                return;
+            }
+
+            consecutiveCorrectAnswers++;
+
+            if (consecutiveCorrectAnswers >= LEARNING_INTERVALS.length) {
+                status = UserLearningWordStatus.REVIEW;
+                return;
+            }
+
+            scheduleNextLearningReview(now);
             return;
         }
 
-        consecutiveCorrectAnswers++;
-
-        if (consecutiveCorrectAnswers >= LEARNING_INTERVALS.length) {
-            status = UserLearningWordStatus.REVIEW;
-            return;
-        }
-
-        scheduleNextLearningReview(now);
+        increaseEaseFactor();
+        scheduleNextReview(now);
     }
 
     public void incorrectAnswer(Instant now) {
         incorrectAnswers++;
         lastReviewedAt = now;
+
+        if (status == UserLearningWordStatus.REVIEW) {
+            decreaseEaseFactor();
+        }
+
         status = UserLearningWordStatus.LEARNING;
         consecutiveCorrectAnswers = Math.max(0, consecutiveCorrectAnswers - 1);
 
@@ -162,6 +175,22 @@ public class UserLearningWord extends BaseEntity {
         int intervalIndex = Math.min(consecutiveCorrectAnswers, LEARNING_INTERVALS.length - 1);
 
         intervalSeconds = LEARNING_INTERVALS[intervalIndex];
+        nextReviewAt = now.plusSeconds(intervalSeconds);
+    }
+
+    private void increaseEaseFactor() {
+        easeFactor = easeFactor.add(EASE_FACTOR_INCREMENT)
+                               .min(MAX_EASE_FACTOR);
+    }
+
+    private void decreaseEaseFactor() {
+        easeFactor = easeFactor.subtract(EASE_FACTOR_DECREMENT)
+                               .max(MIN_EASE_FACTOR);
+    }
+
+    private void scheduleNextReview(Instant now) {
+        intervalSeconds = Math.round(intervalSeconds * easeFactor.doubleValue());
+
         nextReviewAt = now.plusSeconds(intervalSeconds);
     }
 }

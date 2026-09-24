@@ -44,6 +44,7 @@ public class LearningMenuKeyboard {
     private String callbackData(LearningMenu.Action action) {
         return switch (action) {
             case TOPIC -> LearningMenuCallback.TOPIC;
+            case DAILY -> LearningMenuCallback.DAILY;
         };
     }
 }

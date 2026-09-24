@@ -14,6 +14,7 @@ public record LearningMenu(
     }
 
     public enum Action {
-        TOPIC
+        TOPIC,
+        DAILY
     }
 }

@@ -73,7 +73,7 @@ public class TrainingService {
 
         sessionWord.setAnswered(true)
                    .setSelectedAnswer(selectedAnswer)
-                   .setAnsweredAt(Instant.now());
+                   .setAnsweredAt(now);
 
         TrainingSession session = sessionWord.getTrainingSession();
 
@@ -87,7 +87,7 @@ public class TrainingService {
 
         if (session.getAnsweredWords() == session.getTotalWords()) {
             session.setStatus(TrainingSessionStatus.COMPLETED)
-                   .setFinishedAt(Instant.now());
+                   .setFinishedAt(now);
 
             List<TrainingMistake> mistakes = trainingSessionWordRepository.findAllBySessionIdAndUserId(session.getId(), user.getId()).stream()
                                                                           .filter(trainingSessionWord -> !trainingSessionWord.getSelectedAnswer()

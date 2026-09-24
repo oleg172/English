@@ -1,6 +1,7 @@
 package ru.olmi.service.impl.training;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,33 +57,40 @@ public class TrainingSessionService {
 
         List<TrainingQuestion> questions = createQuestions(selectedLearningWords, topicCandidates, otherCandidates);
 
-        if (questions.size() != selectedLearningWords.size()) {
-            throw new IllegalStateException("Unable to create questions for all selected words");
-        }
+        return createSession(user, TrainingMode.TOPIC, selectedLearningWords, questions);
+    }
 
-        TrainingSession session = trainingSessionRepository.save(
-                new TrainingSession()
-                        .setUser(user)
-                        .setStartedAt(Instant.now())
-                        .setStatus(TrainingSessionStatus.CREATED)
-                        .setMode(TrainingMode.TOPIC)
-                        .setTotalWords(questions.size())
-                        .setAnsweredWords(0)
-                        .setCorrectAnswers(0)
-                        .setIncorrectAnswers(0)
+    public TrainingSession createDaily(TelegramUser user, List<UserLearningWord> selectedLearningWords) {
+        validateWordCountObjects(selectedLearningWords);
+
+        List<Long> selectedWordIds = selectedLearningWords.stream()
+                                                          .map(UserLearningWord::getUserWord)
+                                                          .map(UserWord::getId)
+                                                          .toList();
+        List<UserLearningWord> managedSelectedLearningWords = findLearningWordsByIds(user, selectedWordIds);
+        Set<Long> selectedIds = new HashSet<>(selectedWordIds);
+
+        List<UserWord> otherWords = userWordRepository.findAllForTraining(user.getId(), selectedIds);
+        List<UserLearningWord> otherCandidates = findLearningWords(user, otherWords);
+        List<TrainingQuestion> questions = createQuestions(managedSelectedLearningWords, managedSelectedLearningWords, otherCandidates);
+
+        return createSession(
+                user,
+                TrainingMode.DAILY,
+                managedSelectedLearningWords,
+                questions
         );
-
-        saveSessionWords(session, questions, selectedLearningWords);
-
-        return session;
     }
 
     private void validateWordCount(List<Long> userWordIds) {
         if (userWordIds.size() < MIN_WORDS_PER_SESSION) {
-            throw new IllegalArgumentException(
-                    "Training session must contain at least "
-                            + MIN_WORDS_PER_SESSION
-            );
+            throw new IllegalArgumentException("Training session must contain at least " + MIN_WORDS_PER_SESSION);
+        }
+    }
+
+    private void validateWordCountObjects(List<UserLearningWord> learningWords) {
+        if (learningWords.size() < MIN_WORDS_PER_SESSION) {
+            throw new IllegalArgumentException("Training session must contain at least " + MIN_WORDS_PER_SESSION);
         }
     }
 
@@ -120,6 +128,24 @@ public class TrainingSessionService {
         return userWords.stream()
                         .map(userWord -> byUserWordId.get(userWord.getId()))
                         .toList();
+    }
+
+    private List<UserLearningWord> findLearningWordsByIds(TelegramUser user, List<Long> userWordIds) {
+        List<UserLearningWord> learningWords = userLearningWordRepository.findForTraining(user.getId(), userWordIds);
+
+        if (learningWords.size() != userWordIds.size()) {
+            throw new IllegalStateException("Learning state is missing for some user words");
+        }
+
+        Map<Long, UserLearningWord> byUserWordId = learningWords.stream()
+                                                                .collect(Collectors.toMap(learningWord -> learningWord
+                                                                                .getUserWord()
+                                                                                .getId(),
+                                                                        Function.identity()));
+
+        return userWordIds.stream()
+                          .map(byUserWordId::get)
+                          .toList();
     }
 
     private List<UserLearningWord> findTopicCandidates(TelegramUser user, Topic topic) {
@@ -174,5 +200,27 @@ public class TrainingSessionService {
                                                           .toList();
 
         trainingSessionWordRepository.saveAll(sessionWords);
+    }
+
+    private TrainingSession createSession(TelegramUser user, TrainingMode mode, List<UserLearningWord> selectedLearningWords,
+            List<TrainingQuestion> questions) {
+        if (questions.size() != selectedLearningWords.size()) {
+            throw new IllegalStateException("Unable to create questions for all selected words");
+        }
+
+        TrainingSession session = trainingSessionRepository.save(new TrainingSession()
+                .setUser(user)
+                .setStartedAt(Instant.now())
+                .setStatus(TrainingSessionStatus.CREATED)
+                .setMode(mode)
+                .setTotalWords(questions.size())
+                .setAnsweredWords(0)
+                .setCorrectAnswers(0)
+                .setIncorrectAnswers(0)
+        );
+
+        saveSessionWords(session, questions, selectedLearningWords);
+
+        return session;
     }
 }

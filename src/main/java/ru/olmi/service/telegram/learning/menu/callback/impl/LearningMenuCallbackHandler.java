@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.olmi.domain.TelegramUser;
 import ru.olmi.service.telegram.handler.callback.TelegramCallbackHandlerDelegate;
-import ru.olmi.service.telegram.learning.menu.LearningMenuView;
+import ru.olmi.service.telegram.learning.daily.DailyTrainingService;
 import ru.olmi.service.telegram.learning.menu.callback.LearningMenuCallback;
 import ru.olmi.service.telegram.learning.topic.LearningTopicService;
 import ru.olmi.service.telegram.menu.main.MainMenuView;
@@ -18,13 +18,15 @@ public class LearningMenuCallbackHandler implements TelegramCallbackHandlerDeleg
 
     private final MainMenuView mainMenuView;
     private final LearningTopicService learningTopicService;
+    private final DailyTrainingService dailyTrainingService;
 
     @Override
     public boolean supports(CallbackQuery callbackQuery) {
         String data = callbackQuery.getData();
 
         return LearningMenuCallback.MENU.equals(data)
-                || LearningMenuCallback.TOPIC.equals(data);
+                || LearningMenuCallback.TOPIC.equals(data)
+                || LearningMenuCallback.DAILY.equals(data);
     }
 
     @Override
@@ -39,6 +41,10 @@ public class LearningMenuCallbackHandler implements TelegramCallbackHandlerDeleg
 
         if (LearningMenuCallback.TOPIC.equals(data)) {
             sender.accept(learningTopicService.topics(user, chatId));
+        }
+
+        if (LearningMenuCallback.DAILY.equals(data)) {
+            sender.accept(dailyTrainingService.start(user, chatId));
         }
     }
 }
